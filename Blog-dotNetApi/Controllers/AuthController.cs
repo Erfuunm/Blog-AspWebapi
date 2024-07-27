@@ -16,6 +16,11 @@ namespace Blog_dotNetApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+
+
+
+
+
         private readonly IAuthService _authService;
 
         public AuthController(IAuthService authService)
@@ -32,6 +37,10 @@ namespace Blog_dotNetApi.Controllers
 
             return Ok(seerRoles);
         }
+
+
+
+
 
 
         // Route -> Register
