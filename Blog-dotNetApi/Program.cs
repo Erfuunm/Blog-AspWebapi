@@ -1,5 +1,7 @@
 using Blog_dotNetApi.Cors.DbContext;
 using Blog_dotNetApi.Cors.Entities;
+using Blog_dotNetApi.Cors.Interfaces;
+using Blog_dotNetApi.Cors.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +64,11 @@ builder.Services
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
         };
     });
+
+// Inject app Dependencies (Dependency Injection)
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 
 

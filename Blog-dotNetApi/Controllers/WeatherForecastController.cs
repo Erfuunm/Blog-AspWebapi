@@ -24,7 +24,7 @@ namespace Blog_dotNetApi.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserRole")]
+        [Route("User")]
         [Authorize(Roles = StaticUserRoles.USER)]
         public IActionResult GetUserRole()
         {
@@ -32,7 +32,7 @@ namespace Blog_dotNetApi.Controllers
         }
 
         [HttpGet]
-        [Route("GetAdminRole")]
+        [Route("Admin")]
         [Authorize(Roles = StaticUserRoles.ADMIN)]
         public IActionResult GetAdminRole()
         {
@@ -40,7 +40,7 @@ namespace Blog_dotNetApi.Controllers
         }
 
         [HttpGet]
-        [Route("GetOwnerRole")]
+        [Route("Owner")]
         [Authorize(Roles = StaticUserRoles.OWNER)]
         public IActionResult GetOwnerRole()
         {
