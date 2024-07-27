@@ -15,6 +15,12 @@ namespace Blog_dotNetApi.Cors.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private UserManager<ApplicationUser> userManager;
+
+        public AuthService(UserManager<ApplicationUser> userManager)
+        {
+            this.userManager = userManager;
+        }
 
         public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {

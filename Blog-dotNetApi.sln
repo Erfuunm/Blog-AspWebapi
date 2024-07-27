@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blog-dotNetApi", "Blog-dotNetApi\Blog-dotNetApi.csproj", "{9B45452E-6877-46E7-87BA-6A28BF2B4374}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth-Test", "Auth-Test\Auth-Test.csproj", "{A537EF0B-7A6B-4F33-89A6-D675F545127B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{9B45452E-6877-46E7-87BA-6A28BF2B4374}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B45452E-6877-46E7-87BA-6A28BF2B4374}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B45452E-6877-46E7-87BA-6A28BF2B4374}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A537EF0B-7A6B-4F33-89A6-D675F545127B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A537EF0B-7A6B-4F33-89A6-D675F545127B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A537EF0B-7A6B-4F33-89A6-D675F545127B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A537EF0B-7A6B-4F33-89A6-D675F545127B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
