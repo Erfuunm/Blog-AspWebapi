@@ -1,4 +1,5 @@
 using Blog_dotNetApi.Cors.DbContext;
+using Blog_dotNetApi.Cors.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 builder.Services
-    .AddIdentity<IdentityUser, IdentityRole>()
+    .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
