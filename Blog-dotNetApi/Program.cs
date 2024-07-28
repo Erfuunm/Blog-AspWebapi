@@ -1,4 +1,4 @@
-using Blog_dotNetApi.Cors.DbContext;
+using Blog_dotNetApi.Cors.Contexts;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
 using Blog_dotNetApi.Cors.Services;
@@ -17,7 +17,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<IArticleService, ArticleService>();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -25,6 +25,11 @@ var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(connection);
+});
+
+builder.Services.AddDbContext<DataContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 
