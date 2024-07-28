@@ -51,17 +51,9 @@ namespace Auth_Test.Controller
         public async Task AuthController_ValidRegisterDto_ReturnsOk()
         {
             // Arrange
-            var registerDto = new RegisterDto
-            {
-                FirstName = "sshg",
-                LastName = "ssdd",
-                UserName = "svb",
-                Email = "erfm@kdkd",
-                Password = "lsks"
-
-            };
 
 
+            var registerDto = A.Fake<RegisterDto>();
             var registers = A.Fake<ICollection<RegisterDto>>();
             var registerList = A.Fake< IList < RegisterDto >> ();
             A.CallTo(() => authService.RegisterAsync(registerDto));

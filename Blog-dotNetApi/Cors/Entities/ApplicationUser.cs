@@ -6,5 +6,6 @@ namespace Blog_dotNetApi.Cors.Entities
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        
     }
 }
