@@ -10,11 +10,11 @@
 
         public string? Author { get; set; }
 
-        public int PublisherId { get; set; }
+        public int PblId { get; set; }
 
-        //public Publisher Publisher { get; set; }
+        public Publisher Publisher { get; set; }
 
-        //public ICollection<ArticleCategory> articleCategories { get; set;}
+        public ICollection<ArticleCategory> articleCategories { get; set;}
 
     }
 }

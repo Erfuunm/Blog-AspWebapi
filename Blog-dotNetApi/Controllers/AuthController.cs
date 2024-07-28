@@ -19,8 +19,6 @@ namespace Blog_dotNetApi.Controllers
 
 
 
-
-
         private readonly IAuthService _authService;
 
         public AuthController(IAuthService authService)
