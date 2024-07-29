@@ -11,6 +11,9 @@ namespace Blog_dotNetApi.Helper
 
             CreateMap<Article, ArticleDto>();
             CreateMap<Category, CategoryDto>();
+            CreateMap<Publisher, PublisherDto>();
+            CreateMap<ArticleDto, Article>();
+            CreateMap<CategoryDto, Category>();
         
         }
     }

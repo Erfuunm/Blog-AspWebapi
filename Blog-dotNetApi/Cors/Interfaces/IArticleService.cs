@@ -11,7 +11,9 @@ namespace Blog_dotNetApi.Cors.Interfaces
 
         Article GetArticle(string Title);
 
-       
+        bool CreateArticle(int categoryId , Article article);
+
+        bool Save();
 
         bool ArticleExists(int id);
 

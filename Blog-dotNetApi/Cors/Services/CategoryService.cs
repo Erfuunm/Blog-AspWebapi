@@ -1,6 +1,7 @@
 ﻿using Blog_dotNetApi.Cors.Contexts;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog_dotNetApi.Cors.Services
 {
@@ -20,7 +21,8 @@ namespace Blog_dotNetApi.Cors.Services
 
         public bool CreateCategory(Category category)
         {
-            throw new NotImplementedException();
+            _dataContext.Add(category);
+            return Save();
         }
 
         public bool DeleteCategory(Category category)
@@ -45,7 +47,8 @@ namespace Blog_dotNetApi.Cors.Services
 
         public bool Save()
         {
-            throw new NotImplementedException();
+            var saved = _dataContext.SaveChanges();
+            return saved > 0 ? true : false;
         }
 
         public bool UpdateCategory(Category category)

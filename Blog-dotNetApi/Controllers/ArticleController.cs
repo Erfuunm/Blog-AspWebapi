@@ -16,13 +16,14 @@ namespace Blog_dotNetApi.Controllers
     public class ArticleController : ControllerBase
     {
         private readonly IArticleService _ArticleService;
-
+        private readonly IPublisher _publisher;
         private readonly IMapper _mapper;
 
-        public ArticleController(IArticleService ArticleService , IMapper mapper)
+        public ArticleController(IArticleService ArticleService ,IPublisher publisher , IMapper mapper)
         {
             _ArticleService = ArticleService;
             _mapper = mapper;   
+            _publisher = publisher;
         }
 
         [HttpGet]
@@ -39,21 +40,50 @@ namespace Blog_dotNetApi.Controllers
         }
 
 
-        [HttpGet("{Id}")]
+        [HttpGet("{articleId}")]
         [ProducesResponseType(200, Type = typeof(Article))]
         [ProducesResponseType(400)]
-        public IActionResult GetArticle(int id)
+        public IActionResult GetArticle(int articleId)
         {
-            if(_ArticleService.ArticleExists(id)) return NotFound();
+            if (!_ArticleService.ArticleExists(articleId))
+                return NotFound();
 
-            var article = _ArticleService.GetArticle(id);
+            var article = _mapper.Map<ArticleDto>(_ArticleService.GetArticle(articleId));
 
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             return Ok(article);
-
         }
 
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateArticle([FromQuery] int PublisherId, [FromQuery] int catId, [FromBody] ArticleDto ArticleCreate)
+        {
+            if (ArticleCreate == null)
+                return BadRequest(ModelState);
+
+            var articles = _ArticleService.GetArticles()
+                .Where(c => c.Title.Trim().ToUpper() == ArticleCreate.Title.TrimEnd().ToUpper()).FirstOrDefault();
+
+
+          
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var articleMap = _mapper.Map<Article>(ArticleCreate);
+            articleMap.Publisher = _publisher.GetPublisher(PublisherId);
+
+            if (!_ArticleService.CreateArticle( catId, articleMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while savin");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created");
+        }
 
         //[HttpGet("{id}")]
 

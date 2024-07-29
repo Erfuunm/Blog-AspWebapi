@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
     
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<ICategory, CategoryService>();
+builder.Services.AddScoped<IPublisher, PublisherService>();
+//builder.Services.AddControllers().AddJsonOptions(x =>
+//                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
