@@ -1,6 +1,7 @@
 ﻿using Blog_dotNetApi.Cors.Contexts;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog_dotNetApi.Cors.Services
 {
@@ -13,6 +14,12 @@ namespace Blog_dotNetApi.Cors.Services
             _dataContext = dataContext;
         }
 
+        public ICollection<Article> GetArticles()
+        {
+            return _dataContext.Totalarticles.ToList();
+
+            
+        }
 
         public Article GetArticle(int id)
         {
@@ -24,10 +31,7 @@ namespace Blog_dotNetApi.Cors.Services
             return _dataContext.Totalarticles.Where(p => p.Title == Title).FirstOrDefault();
         }
 
-        public ICollection<Article> GetArticles()
-        {
-            return _dataContext.Totalarticles.OrderBy(p => p.ID).ToList();  
-        }
+   
 
 
         public bool ArticleExists(int id)
@@ -35,5 +39,29 @@ namespace Blog_dotNetApi.Cors.Services
             return _dataContext.Totalarticles.Any(p => p.ID == id);
         }
 
+        public bool CreateArticle(int categoryId, Article article)
+        {
+            var category = _dataContext.categories.Where(a => a.ID == categoryId).FirstOrDefault();
+
+            var articleCategory = new ArticleCategory()
+            {
+                Category = category,
+                Article = article,
+            };
+
+            _dataContext.Add(articleCategory);
+
+            _dataContext.Add(article);
+
+            return Save();
+            
+        }
+
+        public bool Save()
+        {
+            var saved = _dataContext.SaveChanges();
+            return saved > 0 ? true : false;
+
+        }
     } 
 }

@@ -34,8 +34,6 @@ namespace Blog_dotNetApi.Cors.Contexts
                .HasForeignKey(c => c.CategoryId);
 
 
-
-
         }
 
 
