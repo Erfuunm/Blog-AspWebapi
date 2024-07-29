@@ -1,4 +1,6 @@
-﻿using Blog_dotNetApi.Cors.Contexts;
+﻿using AutoMapper;
+using Blog_dotNetApi.Cors.Contexts;
+using Blog_dotNetApi.Cors.Dtos;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
 using Blog_dotNetApi.Cors.OtherObjects;
@@ -15,9 +17,12 @@ namespace Blog_dotNetApi.Controllers
     {
         private readonly IArticleService _ArticleService;
 
-        public ArticleController(IArticleService ArticleService)
+        private readonly IMapper _mapper;
+
+        public ArticleController(IArticleService ArticleService , IMapper mapper)
         {
             _ArticleService = ArticleService;
+            _mapper = mapper;   
         }
 
         [HttpGet]
@@ -25,9 +30,9 @@ namespace Blog_dotNetApi.Controllers
         public IActionResult GetArticls()
         {
 
-            var articles = _ArticleService.GetArticles();
+            var articles = _mapper.Map<List<ArticleDto>>(_ArticleService.GetArticles());
 
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             return Ok(articles);
 
@@ -85,6 +90,8 @@ namespace Blog_dotNetApi.Controllers
         //    _dbContext.Entry(article).State = EntityState.Modified;
 
         //    try
+
+
         //    {
         //        await _dbContext.SaveChangesAsync();
         //    }

@@ -1,3 +1,4 @@
+using Blog_dotNetApi;
 using Blog_dotNetApi.Cors.Contexts;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
@@ -6,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
+    
 using System;
 using System.Text;
 
@@ -18,8 +21,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IArticleService, ArticleService>();
-
+builder.Services.AddScoped<ICategory, CategoryService>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddTransient<Seed>();
+
+
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -37,6 +45,10 @@ builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+
+
+
 
 // Config Identity
 builder.Services.Configure<IdentityOptions>(options =>
@@ -78,6 +90,23 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 var app = builder.Build();
+
+
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+    SeedData(app);
+
+void SeedData(IHost app)
+{
+    var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
+
+    using (var scope = scopedFactory.CreateScope())
+    {
+        var service = scope.ServiceProvider.GetService<Seed>();
+        service.SeedDataContext();
+    }
+}
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
