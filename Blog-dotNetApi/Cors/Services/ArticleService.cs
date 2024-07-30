@@ -1,4 +1,5 @@
 ﻿using Blog_dotNetApi.Cors.Contexts;
+using Blog_dotNetApi.Cors.Dtos;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -57,11 +58,30 @@ namespace Blog_dotNetApi.Cors.Services
             
         }
 
+        public Article GetArticleTrimToUpper(ArticleDto ArticleCreate)
+        {
+            return GetArticles().Where(c => c.Title.Trim().ToUpper() == ArticleCreate.Title.TrimEnd().ToUpper())
+                .FirstOrDefault();
+        }
+
+
         public bool Save()
         {
             var saved = _dataContext.SaveChanges();
             return saved > 0 ? true : false;
 
+        }
+
+        public bool UpdateArticle(int categoryId, Article article)
+        {
+            _dataContext.Update(article);
+            return Save();
+        }
+
+        public bool DeleteArticle(Article article)
+        {
+            _dataContext.Remove(article);
+            return Save();
         }
     } 
 }

@@ -1,4 +1,5 @@
 ﻿using Blog_dotNetApi.Cors.Contexts;
+using Blog_dotNetApi.Cors.Dtos;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,8 @@ namespace Blog_dotNetApi.Cors.Services
 
         public bool DeleteCategory(Category category)
         {
-            throw new NotImplementedException();
+            _dataContext.Remove(category);
+            return Save();
         }
 
         public ICollection<Article> GetArticleByCategory(int categoryId)
@@ -45,6 +47,13 @@ namespace Blog_dotNetApi.Cors.Services
             return _dataContext.categories.Where(e => e.ID == id).FirstOrDefault();
         }
 
+        public Category GetCategoryTrimToUpper(CategoryDto categoryCreate)
+        {
+            return GetCategories()
+                .Where(c => c.Title.Trim().ToUpper() == categoryCreate.Title.TrimEnd().ToUpper())
+                .FirstOrDefault();
+        }
+
         public bool Save()
         {
             var saved = _dataContext.SaveChanges();
@@ -53,7 +62,8 @@ namespace Blog_dotNetApi.Cors.Services
 
         public bool UpdateCategory(Category category)
         {
-            throw new NotImplementedException();
+            _dataContext.Update(category);
+            return Save();
         }
     }
 }

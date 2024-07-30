@@ -19,7 +19,8 @@ namespace Blog_dotNetApi.Controllers
         private readonly IPublisher _publisher;
         private readonly IMapper _mapper;
 
-        public ArticleController(IArticleService ArticleService ,IPublisher publisher , IMapper mapper)
+        public ArticleController(IArticleService ArticleService ,IPublisher publisher 
+            , IMapper mapper)
         {
             _ArticleService = ArticleService;
             _mapper = mapper;   
@@ -64,16 +65,21 @@ namespace Blog_dotNetApi.Controllers
             if (ArticleCreate == null)
                 return BadRequest(ModelState);
 
-            var articles = _ArticleService.GetArticles()
-                .Where(c => c.Title.Trim().ToUpper() == ArticleCreate.Title.TrimEnd().ToUpper()).FirstOrDefault();
+            var articles = _ArticleService.GetArticleTrimToUpper(ArticleCreate);
+                
+               
 
+            
 
-          
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+             
+
+
 
             var articleMap = _mapper.Map<Article>(ArticleCreate);
+
             articleMap.Publisher = _publisher.GetPublisher(PublisherId);
 
             if (!_ArticleService.CreateArticle( catId, articleMap))
@@ -84,6 +90,74 @@ namespace Blog_dotNetApi.Controllers
 
             return Ok("Successfully created");
         }
+
+
+        [HttpPut("{articleId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateArticle(int articleId,
+          [FromQuery] int catId,
+          [FromBody] ArticleDto updatedArticle)
+        {
+            
+
+            if (updatedArticle == null)
+                return BadRequest(ModelState);
+
+            //if (articleId != updatedArticle.ID)
+            //    return BadRequest(ModelState);
+
+            if (!_ArticleService.ArticleExists(articleId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+
+            
+
+            var articleMap = _mapper.Map<Article>(updatedArticle);
+
+            if (!_ArticleService.UpdateArticle( catId, articleMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating owner");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Updated");
+        }
+
+        [HttpDelete("{articleId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteArticle(int articleId)
+        {
+            if (!_ArticleService.ArticleExists(articleId))
+            {
+                return NotFound();
+            }
+
+            
+
+            var ArticleToDelete = _ArticleService.GetArticle(articleId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+       
+
+            if (!_ArticleService.DeleteArticle(ArticleToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong in deleting");
+            }
+
+            return Ok("Delete was successfull");
+        }
+
+
+
 
         //[HttpGet("{id}")]
 

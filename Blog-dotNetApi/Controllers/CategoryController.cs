@@ -55,15 +55,15 @@ namespace Blog_dotNetApi.Controllers
         [HttpGet("Article/{categoryId}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Article>))]
         [ProducesResponseType(400)]
-        public IActionResult GetPokemonByCategoryId(int categoryId)
+        public IActionResult GetArticleByCategoryId(int categoryId)
         {
-            var pokemons = _mapper.Map<List<ArticleDto>>(
+            var articles = _mapper.Map<List<ArticleDto>>(
                 _category.GetArticleByCategory(categoryId));
 
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            return Ok(pokemons);
+            return Ok(articles);
         }
 
         [HttpPost]
@@ -74,9 +74,7 @@ namespace Blog_dotNetApi.Controllers
             if (categoryCreate == null)
                 return BadRequest(ModelState);
 
-            var category = _category.GetCategories()
-                .Where(c => c.Title.Trim().ToUpper() == categoryCreate.Title.TrimEnd().ToUpper())
-                .FirstOrDefault();
+            var category = _category.GetCategoryTrimToUpper(categoryCreate);
 
             if (category != null)
             {
@@ -98,6 +96,60 @@ namespace Blog_dotNetApi.Controllers
             return Ok("Successfully created");
         }
 
+
+
+        [HttpPut("{categoryId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategory(int categoryId, [FromBody] CategoryDto updatedCategory)
+        {
+            if (updatedCategory == null)
+                return BadRequest(ModelState);
+
+            if (categoryId != updatedCategory.ID)
+                return BadRequest(ModelState);
+
+            if (!_category.CategoryExists(categoryId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var categoryMap = _mapper.Map<Category>(updatedCategory);
+
+            if (!_category.UpdateCategory(categoryMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating category");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Update was successfull");
+        }
+
+        [HttpDelete("{categoryId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteCategory(int categoryId)
+        {
+            if (!_category.CategoryExists(categoryId))
+            {
+                return NotFound();
+            }
+
+            var categoryToDelete = _category.GetCategory(categoryId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_category.DeleteCategory(categoryToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong deleting category");
+            }
+
+            return Ok("Delete was successfull");
+        }
 
 
 
