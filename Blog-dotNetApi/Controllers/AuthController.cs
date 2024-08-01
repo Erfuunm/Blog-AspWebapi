@@ -17,7 +17,7 @@ namespace Blog_dotNetApi.Controllers
     public class AuthController : ControllerBase
     {
 
-
+        //Init Interfaces and CTOR
 
         private readonly IAuthService _authService;
 
@@ -25,6 +25,9 @@ namespace Blog_dotNetApi.Controllers
         {
             _authService = authService;
         }
+
+
+        // Get / Post / Put / Delete Methodes
 
         // Route For Seeding my roles to DB
         [HttpPost]
@@ -35,9 +38,6 @@ namespace Blog_dotNetApi.Controllers
 
             return Ok(seerRoles);
         }
-
-
-
 
 
 
@@ -53,6 +53,8 @@ namespace Blog_dotNetApi.Controllers
 
             return BadRequest(registerResult);
         }
+
+
 
 
         // Route -> Login
@@ -72,6 +74,7 @@ namespace Blog_dotNetApi.Controllers
 
 
 
+
         // Route -> make user -> admin
         [HttpPost]
         [Route("make-admin")]
@@ -85,6 +88,9 @@ namespace Blog_dotNetApi.Controllers
             return BadRequest(operationResult);
         }
 
+
+
+
         // Route -> make user -> owner
         [HttpPost]
         [Route("make-owner")]
@@ -97,5 +103,9 @@ namespace Blog_dotNetApi.Controllers
 
             return BadRequest(operationResult);
         }
+
+
     }
+
+
 }

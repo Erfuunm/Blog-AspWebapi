@@ -15,9 +15,13 @@ namespace Blog_dotNetApi.Controllers
     [ApiController]
     public class ArticleController : ControllerBase
     {
+
+        //Init Interfaces and CTOR
+
         private readonly IArticleService _ArticleService;
         private readonly IPublisher _publisher;
         private readonly IMapper _mapper;
+
 
         public ArticleController(IArticleService ArticleService ,IPublisher publisher 
             , IMapper mapper)
@@ -26,6 +30,8 @@ namespace Blog_dotNetApi.Controllers
             _mapper = mapper;   
             _publisher = publisher;
         }
+
+        // Get / Post / Put / Delete Methodes
 
         [HttpGet]
         
@@ -40,6 +46,8 @@ namespace Blog_dotNetApi.Controllers
 
         }
 
+
+        //**********
 
         [HttpGet("{articleId}")]
         [ProducesResponseType(200, Type = typeof(Article))]
@@ -57,30 +65,33 @@ namespace Blog_dotNetApi.Controllers
             return Ok(article);
         }
 
+
+        //**********
+
+
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateArticle([FromQuery] int PublisherId, [FromQuery] int catId, [FromBody] ArticleDto ArticleCreate)
+        public IActionResult CreateArticle( [FromQuery] int catId, [FromBody] ArticleDto ArticleCreate)
         {
             if (ArticleCreate == null)
                 return BadRequest(ModelState);
 
-            var articles = _ArticleService.GetArticleTrimToUpper(ArticleCreate);
-                
-               
-
-            
-
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-             
 
 
+            
+
+            var articles = _ArticleService.GetArticleTrimToUpper(ArticleCreate);
+            
 
             var articleMap = _mapper.Map<Article>(ArticleCreate);
 
-            articleMap.Publisher = _publisher.GetPublisher(PublisherId);
+
+           
+
 
             if (!_ArticleService.CreateArticle( catId, articleMap))
             {
@@ -88,25 +99,30 @@ namespace Blog_dotNetApi.Controllers
                 return StatusCode(500, ModelState);
             }
 
+            
+
+            articleMap.Publisher = setPublisherID();
+           
+
             return Ok("Successfully created");
         }
+
+
+        //**********
 
 
         [HttpPut("{articleId}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateArticle(int articleId,
-          [FromQuery] int catId,
-          [FromBody] ArticleDto updatedArticle)
+        public IActionResult UpdateArticle(int articleId, [FromQuery] int catId, [FromBody] ArticleDto updatedArticle)
         {
             
 
             if (updatedArticle == null)
                 return BadRequest(ModelState);
 
-            //if (articleId != updatedArticle.ID)
-            //    return BadRequest(ModelState);
+         
 
             if (!_ArticleService.ArticleExists(articleId))
                 return NotFound();
@@ -114,10 +130,12 @@ namespace Blog_dotNetApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest();
 
-
             
 
             var articleMap = _mapper.Map<Article>(updatedArticle);
+
+            
+
 
             if (!_ArticleService.UpdateArticle( catId, articleMap))
             {
@@ -127,6 +145,8 @@ namespace Blog_dotNetApi.Controllers
 
             return Ok("Updated");
         }
+
+        //**********
 
         [HttpDelete("{articleId}")]
         [ProducesResponseType(400)]
@@ -158,94 +178,13 @@ namespace Blog_dotNetApi.Controllers
 
 
 
+        private Publisher setPublisherID()
+        {
+            int PublisherId = 1;
+            return _publisher.GetPublisher(PublisherId);
 
-        //[HttpGet("{id}")]
+        }
 
-        //public async Task<ActionResult<Article>> GetArticle(int id)
-        //{
-        //    if (_dbContext.articles == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var article = await _dbContext.articles.FindAsync(id);
-
-        //    if (article == null) { return NotFound(); }
-
-        //    return article;
-        //}
-
-        //[HttpPost]
-        //[Route("create-article")]
-
-        //public async Task<ActionResult<Article>> PostArticle(Article article)
-        //{
-        //    _dbContext.articles.Add(article);
-        //    await _dbContext.SaveChangesAsync();
-        //    return CreatedAtAction(nameof(GetArticle), new { id = article.ID }, article);
-        //}
-
-        //[HttpPut]
-        //public async Task<IActionResult> PutArticle(int id, Article article)
-        //{
-        //    if (id != article.ID)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    _dbContext.Entry(article).State = EntityState.Modified;
-
-        //    try
-
-
-        //    {
-        //        await _dbContext.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-
-        //        if (!ArticleAvailable(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-
-        //    }
-        //    return Ok();
-
-        //}
-        //private bool ArticleAvailable(int id)
-        //{
-        //    return (_dbContext.articles?.Any(a => a.ID == id)).GetValueOrDefault();
-        //}
-
-
-        //[HttpDelete("{id}")]
-
-        //public async Task<IActionResult> DeleteArticle(int id)
-        //{
-        //    if (_dbContext.articles == null)
-        //    {
-        //        return NotFound();
-
-        //    }
-        //    var article = await _dbContext.articles.FindAsync(id);
-        //    if (article == null)
-        //    {
-        //        return NotFound();
-
-        //    }
-
-
-        //    _dbContext.articles.Remove(article);
-
-        //    await _dbContext.SaveChangesAsync();
-
-        //    return Ok();
-
-
-        //}
 
     }
 

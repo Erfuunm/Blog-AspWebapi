@@ -12,6 +12,9 @@ namespace Blog_dotNetApi.Controllers
     public class CategoryController : ControllerBase
     {
 
+        //Init Interfaces and CTOR
+
+
         private readonly ICategory _category;
 
         private readonly IMapper _mapper;
@@ -22,6 +25,9 @@ namespace Blog_dotNetApi.Controllers
             _category = category;
             _mapper = mapper;
         }
+
+
+        // Get / Post / Put / Delete Methodes
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Category>))]
@@ -34,6 +40,10 @@ namespace Blog_dotNetApi.Controllers
 
             return Ok(categories);
         }
+
+
+        //***********
+
 
         [HttpGet("{categoryId}")]
         [ProducesResponseType(200, Type = typeof(Category))]
@@ -52,6 +62,9 @@ namespace Blog_dotNetApi.Controllers
         }
 
 
+        //***********
+
+
         [HttpGet("Article/{categoryId}")]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Article>))]
         [ProducesResponseType(400)]
@@ -65,6 +78,10 @@ namespace Blog_dotNetApi.Controllers
 
             return Ok(articles);
         }
+
+
+        //***********
+
 
         [HttpPost]
         [ProducesResponseType(204)]
@@ -97,6 +114,8 @@ namespace Blog_dotNetApi.Controllers
         }
 
 
+        //***********
+
 
         [HttpPut("{categoryId}")]
         [ProducesResponseType(400)]
@@ -126,6 +145,10 @@ namespace Blog_dotNetApi.Controllers
 
             return Ok("Update was successfull");
         }
+
+
+        //***********
+
 
         [HttpDelete("{categoryId}")]
         [ProducesResponseType(400)]

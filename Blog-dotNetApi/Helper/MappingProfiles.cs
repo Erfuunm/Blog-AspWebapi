@@ -9,11 +9,18 @@ namespace Blog_dotNetApi.Helper
 
         public MappingProfiles() {
 
+            //this class is used for Autommaper 
+
             CreateMap<Article, ArticleDto>();
+
             CreateMap<Category, CategoryDto>();
+
             CreateMap<Publisher, PublisherDto>();
+
             CreateMap<ArticleDto, Article>();
+
             CreateMap<CategoryDto, Category>();
+
         
         }
     }

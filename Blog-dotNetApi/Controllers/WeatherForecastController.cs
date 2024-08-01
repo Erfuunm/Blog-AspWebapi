@@ -13,15 +13,14 @@ namespace Blog_dotNetApi.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-
-
-
         [HttpGet]
         [Route("Get")]
         public IActionResult Get()
         {
             return Ok(Summaries);
         }
+
+
 
         [HttpGet]
         [Route("User")]
@@ -31,6 +30,8 @@ namespace Blog_dotNetApi.Controllers
             return Ok(Summaries);
         }
 
+
+
         [HttpGet]
         [Route("Admin")]
         [Authorize(Roles = StaticUserRoles.ADMIN)]
@@ -39,6 +40,8 @@ namespace Blog_dotNetApi.Controllers
             return Ok(Summaries);
         }
 
+
+
         [HttpGet]
         [Route("Owner")]
         [Authorize(Roles = StaticUserRoles.OWNER)]
@@ -46,6 +49,8 @@ namespace Blog_dotNetApi.Controllers
         {
             return Ok(Summaries);
         }
+
+
 
     }
 }

@@ -31,7 +31,20 @@ var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddTransient<Seed>();
 
+var provider = builder.Services.BuildServiceProvider();
 
+var config = provider.GetRequiredService<IConfiguration>();
+
+builder.Services.AddCors(options =>
+{
+    var frontendURL = config.GetValue<string>("frontend_url");
+
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+    });
+
+});
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -118,6 +131,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

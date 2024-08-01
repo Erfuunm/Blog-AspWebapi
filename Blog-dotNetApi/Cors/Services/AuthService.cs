@@ -12,6 +12,9 @@ namespace Blog_dotNetApi.Cors.Services
 {
     public class AuthService : IAuthService
     {
+
+        //Init Data and CTOR
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
@@ -30,90 +33,37 @@ namespace Blog_dotNetApi.Cors.Services
         }
 
 
-        public async Task<AuthServiceResponseDto> LoginAsync(LoginDto loginDto)
+        //Implemetion for the Functions
+
+
+        public async Task<AuthServiceResponseDto> SeedRolesAsync()
         {
-            var user = await _userManager.FindByNameAsync(loginDto.UserName);
+            bool isOwnerRoleExists = await _roleManager.RoleExistsAsync(StaticUserRoles.OWNER);
+            bool isAdminRoleExists = await _roleManager.RoleExistsAsync(StaticUserRoles.ADMIN);
+            bool isUserRoleExists = await _roleManager.RoleExistsAsync(StaticUserRoles.USER);
 
-            if (user is null)
+            if (isOwnerRoleExists && isAdminRoleExists && isUserRoleExists)
                 return new AuthServiceResponseDto()
                 {
-                    IsSucceed = false,
-                    Message = "Invalid Credentials"
+                    IsSucceed = true,
+                    Message = "Roles Seeding is Already Done"
                 };
 
-            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, loginDto.Password);
-
-            if (!isPasswordCorrect)
-                return new AuthServiceResponseDto()
-                {
-                    IsSucceed = false,
-                    Message = "Invalid Credentials"
-                };
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("JWTID", Guid.NewGuid().ToString()),
-                new Claim("FirstName", user.FirstName),
-                new Claim("LastName", user.LastName),
-            };
-
-            foreach (var userRole in userRoles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-            }
-
-            var token = GenerateNewJsonWebToken(authClaims);
+            await _roleManager.CreateAsync(new IdentityRole(StaticUserRoles.USER));
+            await _roleManager.CreateAsync(new IdentityRole(StaticUserRoles.ADMIN));
+            await _roleManager.CreateAsync(new IdentityRole(StaticUserRoles.OWNER));
 
             return new AuthServiceResponseDto()
             {
                 IsSucceed = true,
-                Message = token
+                Message = "Role Seeding Done Successfully"
             };
         }
 
-        public async Task<AuthServiceResponseDto> MakeAdminAsync(UpdatePermissionDto updatePermissionDto)
-        {
-            var user = await _userManager.FindByNameAsync(updatePermissionDto.UserName);
 
-            if (user is null)
-                return new AuthServiceResponseDto()
-                {
-                    IsSucceed = false,
-                    Message = "Invalid User name!!!!!!!!"
-                };
 
-            await _userManager.AddToRoleAsync(user, StaticUserRoles.ADMIN);
+        //**********
 
-            return new AuthServiceResponseDto()
-            {
-                IsSucceed = true,
-                Message = "User is now an ADMIN"
-            };
-        }
-
-        public async Task<AuthServiceResponseDto> MakeOwnerAsync(UpdatePermissionDto updatePermissionDto)
-        {
-            var user = await _userManager.FindByNameAsync(updatePermissionDto.UserName);
-
-            if (user is null)
-                return new AuthServiceResponseDto()
-                {
-                    IsSucceed = false,
-                    Message = "Invalid User name!!!!!!!!"
-                };
-
-            await _userManager.AddToRoleAsync(user, StaticUserRoles.OWNER);
-
-            return new AuthServiceResponseDto()
-            {
-                IsSucceed = true,
-                Message = "User is now an OWNER"
-            };
-        }
 
         public async Task<AuthServiceResponseDto> RegisterAsync(RegisterDto registerDto)
         {
@@ -162,29 +112,107 @@ namespace Blog_dotNetApi.Cors.Services
             };
         }
 
-        public async Task<AuthServiceResponseDto> SeedRolesAsync()
-        {
-            bool isOwnerRoleExists = await _roleManager.RoleExistsAsync(StaticUserRoles.OWNER);
-            bool isAdminRoleExists = await _roleManager.RoleExistsAsync(StaticUserRoles.ADMIN);
-            bool isUserRoleExists = await _roleManager.RoleExistsAsync(StaticUserRoles.USER);
+        
+        //***********
 
-            if (isOwnerRoleExists && isAdminRoleExists && isUserRoleExists)
+
+
+
+        public async Task<AuthServiceResponseDto> LoginAsync(LoginDto loginDto)
+        {
+            var user = await _userManager.FindByNameAsync(loginDto.UserName);
+
+            if (user is null)
                 return new AuthServiceResponseDto()
                 {
-                    IsSucceed = true,
-                    Message = "Roles Seeding is Already Done"
+                    IsSucceed = false,
+                    Message = "Invalid Credentials"
                 };
 
-            await _roleManager.CreateAsync(new IdentityRole(StaticUserRoles.USER));
-            await _roleManager.CreateAsync(new IdentityRole(StaticUserRoles.ADMIN));
-            await _roleManager.CreateAsync(new IdentityRole(StaticUserRoles.OWNER));
+            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+
+            if (!isPasswordCorrect)
+                return new AuthServiceResponseDto()
+                {
+                    IsSucceed = false,
+                    Message = "Invalid Credentials"
+                };
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim("JWTID", Guid.NewGuid().ToString()),
+                new Claim("FirstName", user.FirstName),
+                new Claim("LastName", user.LastName),
+            };
+
+            foreach (var userRole in userRoles)
+            {
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+
+            var token = GenerateNewJsonWebToken(authClaims);
 
             return new AuthServiceResponseDto()
             {
                 IsSucceed = true,
-                Message = "Role Seeding Done Successfully"
+                Message = token
             };
         }
+
+
+        //*********
+
+
+        public async Task<AuthServiceResponseDto> MakeAdminAsync(UpdatePermissionDto updatePermissionDto)
+        {
+            var user = await _userManager.FindByNameAsync(updatePermissionDto.UserName);
+
+            if (user is null)
+                return new AuthServiceResponseDto()
+                {
+                    IsSucceed = false,
+                    Message = "Invalid User name!!!!!!!!"
+                };
+
+            await _userManager.AddToRoleAsync(user, StaticUserRoles.ADMIN);
+
+            return new AuthServiceResponseDto()
+            {
+                IsSucceed = true,
+                Message = "User is now an ADMIN"
+            };
+        }
+
+
+        //*********
+
+        public async Task<AuthServiceResponseDto> MakeOwnerAsync(UpdatePermissionDto updatePermissionDto)
+        {
+            var user = await _userManager.FindByNameAsync(updatePermissionDto.UserName);
+
+            if (user is null)
+                return new AuthServiceResponseDto()
+                {
+                    IsSucceed = false,
+                    Message = "Invalid User name!!!!!!!!"
+                };
+
+            await _userManager.AddToRoleAsync(user, StaticUserRoles.OWNER);
+
+            return new AuthServiceResponseDto()
+            {
+                IsSucceed = true,
+                Message = "User is now an OWNER"
+            };
+        }
+
+
+        //*********
+
 
         private string GenerateNewJsonWebToken(List<Claim> claims)
         {
