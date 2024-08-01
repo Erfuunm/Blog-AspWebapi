@@ -15,16 +15,23 @@ namespace Blog_dotNetApi.Controllers
     [ApiController]
     public class ArticleController : ControllerBase
     {
+
+        //Init Interfaces and CTOR
+
         private readonly IArticleService _ArticleService;
         private readonly IPublisher _publisher;
         private readonly IMapper _mapper;
 
-        public ArticleController(IArticleService ArticleService ,IPublisher publisher , IMapper mapper)
+
+        public ArticleController(IArticleService ArticleService ,IPublisher publisher 
+            , IMapper mapper)
         {
             _ArticleService = ArticleService;
             _mapper = mapper;   
             _publisher = publisher;
         }
+
+        // Get / Post / Put / Delete Methodes
 
         [HttpGet]
         
@@ -39,6 +46,8 @@ namespace Blog_dotNetApi.Controllers
 
         }
 
+
+        //**********
 
         [HttpGet("{articleId}")]
         [ProducesResponseType(200, Type = typeof(Article))]
@@ -56,25 +65,33 @@ namespace Blog_dotNetApi.Controllers
             return Ok(article);
         }
 
+
+        //**********
+
+
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateArticle([FromQuery] int PublisherId, [FromQuery] int catId, [FromBody] ArticleDto ArticleCreate)
+        public IActionResult CreateArticle( [FromQuery] int catId, [FromBody] ArticleDto ArticleCreate)
         {
             if (ArticleCreate == null)
                 return BadRequest(ModelState);
 
-            var articles = _ArticleService.GetArticles()
-                .Where(c => c.Title.Trim().ToUpper() == ArticleCreate.Title.TrimEnd().ToUpper()).FirstOrDefault();
-
-
-          
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+
+            
+
+            var articles = _ArticleService.GetArticleTrimToUpper(ArticleCreate);
+            
+
             var articleMap = _mapper.Map<Article>(ArticleCreate);
-            articleMap.Publisher = _publisher.GetPublisher(PublisherId);
+
+
+           
+
 
             if (!_ArticleService.CreateArticle( catId, articleMap))
             {
@@ -82,96 +99,92 @@ namespace Blog_dotNetApi.Controllers
                 return StatusCode(500, ModelState);
             }
 
+            
+
+            articleMap.Publisher = setPublisherID();
+           
+
             return Ok("Successfully created");
         }
 
-        //[HttpGet("{id}")]
 
-        //public async Task<ActionResult<Article>> GetArticle(int id)
-        //{
-        //    if (_dbContext.articles == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var article = await _dbContext.articles.FindAsync(id);
-
-        //    if (article == null) { return NotFound(); }
-
-        //    return article;
-        //}
-
-        //[HttpPost]
-        //[Route("create-article")]
-
-        //public async Task<ActionResult<Article>> PostArticle(Article article)
-        //{
-        //    _dbContext.articles.Add(article);
-        //    await _dbContext.SaveChangesAsync();
-        //    return CreatedAtAction(nameof(GetArticle), new { id = article.ID }, article);
-        //}
-
-        //[HttpPut]
-        //public async Task<IActionResult> PutArticle(int id, Article article)
-        //{
-        //    if (id != article.ID)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    _dbContext.Entry(article).State = EntityState.Modified;
-
-        //    try
+        //**********
 
 
-        //    {
-        //        await _dbContext.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
+        [HttpPut("{articleId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateArticle(int articleId, [FromQuery] int catId, [FromBody] ArticleDto updatedArticle)
+        {
+            
 
-        //        if (!ArticleAvailable(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
+            if (updatedArticle == null)
+                return BadRequest(ModelState);
 
-        //    }
-        //    return Ok();
+         
 
-        //}
-        //private bool ArticleAvailable(int id)
-        //{
-        //    return (_dbContext.articles?.Any(a => a.ID == id)).GetValueOrDefault();
-        //}
+            if (!_ArticleService.ArticleExists(articleId))
+                return NotFound();
 
+            if (!ModelState.IsValid)
+                return BadRequest();
 
-        //[HttpDelete("{id}")]
+            
 
-        //public async Task<IActionResult> DeleteArticle(int id)
-        //{
-        //    if (_dbContext.articles == null)
-        //    {
-        //        return NotFound();
+            var articleMap = _mapper.Map<Article>(updatedArticle);
 
-        //    }
-        //    var article = await _dbContext.articles.FindAsync(id);
-        //    if (article == null)
-        //    {
-        //        return NotFound();
-
-        //    }
+            
 
 
-        //    _dbContext.articles.Remove(article);
+            if (!_ArticleService.UpdateArticle( catId, articleMap))
+            {
+                ModelState.AddModelError("", "Something went wrong updating owner");
+                return StatusCode(500, ModelState);
+            }
 
-        //    await _dbContext.SaveChangesAsync();
+            return Ok("Updated");
+        }
 
-        //    return Ok();
+        //**********
+
+        [HttpDelete("{articleId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteArticle(int articleId)
+        {
+            if (!_ArticleService.ArticleExists(articleId))
+            {
+                return NotFound();
+            }
+
+            
+
+            var ArticleToDelete = _ArticleService.GetArticle(articleId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+       
+
+            if (!_ArticleService.DeleteArticle(ArticleToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong in deleting");
+            }
+
+            return Ok("Delete was successfull");
+        }
 
 
-        //}
+
+        private Publisher setPublisherID()
+        {
+            int PublisherId = 1;
+            return _publisher.GetPublisher(PublisherId);
+
+        }
+
 
     }
 

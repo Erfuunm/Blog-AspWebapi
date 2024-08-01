@@ -1,4 +1,5 @@
-﻿using Blog_dotNetApi.Cors.Entities;
+﻿using Blog_dotNetApi.Cors.Dtos;
+using Blog_dotNetApi.Cors.Entities;
 
 namespace Blog_dotNetApi.Cors.Interfaces
 {
@@ -11,6 +12,7 @@ namespace Blog_dotNetApi.Cors.Interfaces
         bool CategoryExists(int id);
         bool CreateCategory(Category category);
         bool UpdateCategory(Category category);
+        Category GetCategoryTrimToUpper(CategoryDto articleCreate);
         bool DeleteCategory(Category category);
         bool Save();
     }

@@ -72,7 +72,23 @@ namespace Auth_Test.Controller
         }
 
 
+        [Fact]
+
+        public async Task AuthController_ValidLoginDto_ReturnsOk()
+        {
+            
+           
+            var loginDto = A.Fake<LoginDto>();
+            var controller = new AuthController(authService);
 
 
-    }
+            var result = controller.Login(loginDto);
+
+            result.Should().NotBeNull();
+
+            
+
+        }
+
+        }
 }

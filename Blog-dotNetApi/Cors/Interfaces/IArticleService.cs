@@ -1,4 +1,5 @@
-﻿using Blog_dotNetApi.Cors.Entities;
+﻿using Blog_dotNetApi.Cors.Dtos;
+using Blog_dotNetApi.Cors.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog_dotNetApi.Cors.Interfaces
@@ -12,10 +13,14 @@ namespace Blog_dotNetApi.Cors.Interfaces
         Article GetArticle(string Title);
 
         bool CreateArticle(int categoryId , Article article);
+        Article GetArticleTrimToUpper(ArticleDto articleCreate);
 
-        bool Save();
+        bool UpdateArticle( int categoryId, Article article);
+        bool DeleteArticle(Article article);
 
         bool ArticleExists(int id);
+
+        bool Save();
 
 
     }

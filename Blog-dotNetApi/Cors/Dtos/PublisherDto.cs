@@ -8,7 +8,7 @@
 
         public DateTime PublishDate { get; set; }
 
-        public int ArticleId { get; set; }
+      
 
     }
 }

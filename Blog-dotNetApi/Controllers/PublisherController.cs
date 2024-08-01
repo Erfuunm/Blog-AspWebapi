@@ -11,6 +11,9 @@ namespace Blog_dotNetApi.Controllers
     [ApiController]
     public class PublisherController : ControllerBase
     {
+
+        //Init Interfaces and CTOR
+
         private readonly IPublisher _Publisher;
         private readonly IMapper _mapper;
 
@@ -21,6 +24,8 @@ namespace Blog_dotNetApi.Controllers
             _Publisher = publisher; 
         }
 
+
+        // Get / Post / Put / Delete Methodes
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Publisher>))]
@@ -33,6 +38,9 @@ namespace Blog_dotNetApi.Controllers
 
             return Ok(publishers);
         }
+
+
+        //***********
 
 
         [HttpGet("{PublisherId}")]
