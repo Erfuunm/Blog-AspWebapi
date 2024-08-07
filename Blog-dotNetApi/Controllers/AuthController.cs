@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace Blog_dotNetApi.Controllers
 {
@@ -40,6 +41,26 @@ namespace Blog_dotNetApi.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetUser")]
+        public async Task<IActionResult> GetUser([FromQuery] string token)
+        {
+           var username =  _authService.ExtractFirstName(token);
+
+            DataDto dataDto = new DataDto();
+            dataDto.UserName = username;
+
+            var user = await _authService.UserDataAsync(dataDto);
+
+            return Ok(user);
+        }
+
+
+
+   
+
+
+
 
         // Route -> Register
         [HttpPost]
@@ -61,7 +82,7 @@ namespace Blog_dotNetApi.Controllers
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
-        {
+          {
             var loginResult = await _authService.LoginAsync(loginDto);
 
             
@@ -102,6 +123,54 @@ namespace Blog_dotNetApi.Controllers
                 return Ok(operationResult);
 
             return BadRequest(operationResult);
+        }
+
+
+
+         [HttpGet("extractFirstName")]
+        public IActionResult ExtractFirstName(string token)
+        {
+            try
+            {
+                // Split the token into parts
+                var parts = token.Split('.');
+                if (parts.Length != 3)
+                {
+                    return BadRequest("Invalid JWT token.");
+                }
+
+                // Decode the payload (the second part of the JWT)
+                var payload = parts[1];
+                var jsonBytes = Convert.FromBase64String(PadBase64(payload));
+                var jsonString = Encoding.UTF8.GetString(jsonBytes);
+
+                // Deserialize the JSON to a dynamic object
+                var payloadData = JsonSerializer.Deserialize<JsonElement>(jsonString);
+
+                // Extract FirstName from the payload data
+                if (payloadData.TryGetProperty("FirstName", out JsonElement firstNameElement))
+                {
+                    return Ok(firstNameElement.GetString());
+                }
+                else
+                {
+                    return NotFound("FirstName not found in the token.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error extracting FirstName: {ex.Message}");
+            }
+        }
+
+        private string PadBase64(string base64)
+        {
+            switch (base64.Length % 4)
+            {
+                case 2: return base64 + "==";
+                case 3: return base64 + "=";
+                default: return base64;
+            }
         }
 
 

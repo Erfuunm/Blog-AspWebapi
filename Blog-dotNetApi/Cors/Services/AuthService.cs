@@ -1,12 +1,16 @@
-﻿using Blog_dotNetApi.Cors.Dtos;
+﻿using Azure.Messaging;
+using Blog_dotNetApi.Cors.Contexts;
+using Blog_dotNetApi.Cors.Dtos;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
 using Blog_dotNetApi.Cors.OtherObjects;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace Blog_dotNetApi.Cors.Services
 {
@@ -230,5 +234,67 @@ namespace Blog_dotNetApi.Cors.Services
 
             return token;
         }
+
+        public async Task<ApplicationUser> UserDataAsync(DataDto dataDto)
+        {
+            var user = await _userManager.FindByNameAsync(dataDto.UserName);
+
+            return user;
+        
+
+        }
+
+
+        //********************************
+
+
+
+        public string ExtractFirstName(string token)
+        {
+            try
+            {
+                // Split the token into parts
+                var parts = token.Split('.');
+                if (parts.Length != 3)
+                {
+                    return null;
+                }
+
+                // Decode the payload (the second part of the JWT)
+                var payload = parts[1];
+                var jsonBytes = Convert.FromBase64String(PadBase64(payload));
+                var jsonString = Encoding.UTF8.GetString(jsonBytes);
+
+                // Deserialize the JSON to a dynamic object
+                var payloadData = JsonSerializer.Deserialize<JsonElement>(jsonString);
+
+                // Extract FirstName from the payload data
+                if (payloadData.TryGetProperty("FirstName", out JsonElement firstNameElement))
+                {
+                    return firstNameElement.GetString();
+                }
+                else
+                {
+                    return "FirstName not found in the token.";
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"Error extracting FirstName: {ex.Message}";
+            }
+        }
+
+        private string PadBase64(string base64)
+        {
+            switch (base64.Length % 4)
+            {
+                case 2: return base64 + "==";
+                case 3: return base64 + "=";
+                default: return base64;
+            }
+        }
+
+
+
     }
 }
