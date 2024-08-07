@@ -8,6 +8,7 @@ namespace Blog_dotNetApi.Cors.Interfaces
 
         ICollection<Category> GetCategories();
         Category GetCategory(int id);
+        int FindCategoryId(string CategoryId);
         ICollection<Article> GetArticleByCategory(int categoryId);
         bool CategoryExists(int id);
         bool CreateCategory(Category category);

@@ -4,6 +4,7 @@ using Blog_dotNetApi.Cors.Dtos;
 using Blog_dotNetApi.Cors.Entities;
 using Blog_dotNetApi.Cors.Interfaces;
 using Blog_dotNetApi.Cors.OtherObjects;
+using Blog_dotNetApi.Cors.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,7 @@ namespace Blog_dotNetApi.Controllers
         private readonly IArticleService _ArticleService;
         private readonly IPublisher _publisher;
         private readonly IMapper _mapper;
+        private readonly CategoryService _Category;
 
 
         public ArticleController(IArticleService ArticleService ,IPublisher publisher 
@@ -72,7 +74,7 @@ namespace Blog_dotNetApi.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateArticle( [FromQuery] int catId, [FromBody] ArticleDto ArticleCreate)
+        public IActionResult CreateArticle( [FromBody] ArticleDto ArticleCreate)
         {
             if (ArticleCreate == null)
                 return BadRequest(ModelState);
@@ -82,18 +84,24 @@ namespace Blog_dotNetApi.Controllers
                 return BadRequest(ModelState);
 
 
-            
+
+           
 
             var articles = _ArticleService.GetArticleTrimToUpper(ArticleCreate);
             
 
+
+
             var articleMap = _mapper.Map<Article>(ArticleCreate);
 
 
-           
+            //var CatId = _Category.FindCategoryId("Sport");
+
+            articleMap.Publisher = setPublisherID();
 
 
-            if (!_ArticleService.CreateArticle( catId, articleMap))
+
+            if (!_ArticleService.CreateArticle( (2), articleMap))
             {
                 ModelState.AddModelError("", "Something went wrong while savin");
                 return StatusCode(500, ModelState);
@@ -101,7 +109,7 @@ namespace Blog_dotNetApi.Controllers
 
             
 
-            articleMap.Publisher = setPublisherID();
+            
            
 
             return Ok("Successfully created");
@@ -115,7 +123,7 @@ namespace Blog_dotNetApi.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateArticle(int articleId, [FromQuery] int catId, [FromBody] ArticleDto updatedArticle)
+        public IActionResult UpdateArticle(int articleId, [FromBody] ArticleDto updatedArticle)
         {
             
 
@@ -137,7 +145,7 @@ namespace Blog_dotNetApi.Controllers
             
 
 
-            if (!_ArticleService.UpdateArticle( catId, articleMap))
+            if (!_ArticleService.UpdateArticle( (1), articleMap))
             {
                 ModelState.AddModelError("", "Something went wrong updating owner");
                 return StatusCode(500, ModelState);

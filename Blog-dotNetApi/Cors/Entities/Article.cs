@@ -12,6 +12,8 @@
 
         public int PblId { get; set; }
 
+
+
         public Publisher Publisher { get; set; }
 
         public ICollection<ArticleCategory> articleCategories { get; set;}

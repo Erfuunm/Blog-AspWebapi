@@ -66,6 +66,13 @@ namespace Blog_dotNetApi.Cors.Services
             return _dataContext.categories.Where(e => e.ID == id).FirstOrDefault();
         }
 
+
+        public int FindCategoryId(string categoryName)
+        {
+            var Categorytest = _dataContext.categories.Where(e => e.Title == categoryName ).FirstOrDefault();
+            return Categorytest.ID;
+        }
+
         //*******
 
         public Category GetCategoryTrimToUpper(CategoryDto categoryCreate)
